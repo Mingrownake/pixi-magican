@@ -300,40 +300,40 @@ Skill description: at level 8, the player unlocks an area explosion centered on 
 - [x] Add clear visual effect for the explosion radius.
 - [x] Add cooldown and mana consumption.
 
-## Theme 4 — Enemies `[ ]`
+## Theme 4 — Enemies `[x]`
 
 Goal: implement multiple enemy archetypes with readable behavior, configurable stats, and scalable spawning.
 
-### Block 4.1 — Enemy foundation `[ ]`
+### Block 4.1 — Enemy foundation `[x]`
 
-- [ ] Create base `Enemy` screen/script with HP, speed, damage, radius, reward XP, and type.
-- [ ] Add enemy factory using config-driven definitions or visual factory or entity factory mappings.
-- [ ] Add enemy movement update.
-- [ ] Add enemy damage and death handling.
-- [ ] Add contact damage against the player.
-- [ ] Add XP reward or XP essence spawn on death.
+- [x] Create base `Enemy` screen/script with HP, speed, damage, radius, reward XP, and type.
+- [x] Add enemy factory using config-driven definitions or visual factory or entity factory mappings.
+- [x] Add enemy movement update.
+- [x] Add enemy damage and death handling.
+- [x] Add contact damage against the player.
+- [x] Add XP reward or XP essence spawn on death.
 
-### Block 4.2 — Warrior enemies `[ ]`
+### Block 4.2 — Warrior enemies `[x]`
 
-- [ ] Implement basic warrior that walks directly toward the player.
-- [ ] Implement fast warrior with lower HP and higher speed.
-- [ ] Add config for both warrior types.
-- [ ] Verify both types can spawn and damage the player.
+- [x] Implement basic warrior that walks directly toward the player.
+- [x] Implement fast warrior with lower HP and higher speed.
+- [x] Add config for both warrior types.
+- [x] Verify both types can spawn and damage the player.
 
-### Block 4.2A — Playable combat checkpoint `[ ]`
+### Block 4.2A — Playable combat checkpoint `[x]`
 
-- [ ] Ensure launching the main screen shows the playable game instead of placeholder content.
-- [ ] Add an in-game checkpoint HUD with controls, HP/MP/XP, enemy count, kills, and FPS.
-- [ ] Add continuous warrior spawning for a short performance/combat test loop.
-- [ ] Ensure the player can move, use dash damage, kill enemies, and keep playing without a blocking level-up selection screen.
+- [x] Ensure launching the main screen shows the playable game instead of placeholder content.
+- [x] Add an in-game checkpoint HUD with controls, HP/MP/XP, enemy count, kills, and FPS.
+- [x] Add continuous warrior spawning for a short performance/combat test loop.
+- [x] Ensure the player can move, use dash damage, kill enemies, and keep playing without a blocking level-up selection screen.
 
-### Block 4.3 — Ranged enemies `[ ]`
+### Block 4.3 — Ranged enemies `[x]`
 
-- [ ] Implement basic shooter that keeps distance and fires projectiles.
-- [ ] Implement grenade thrower with delayed area damage indicator.
-- [ ] Implement Molotov thrower that creates a temporary burning area.
-- [ ] Add projectile and hazard systems if not already present.
-- [ ] Add config for fire rate, projectile speed, range, damage, grenade fuse, Molotov duration, and area radius.
+- [x] Implement basic shooter that keeps distance and fires projectiles.
+- [x] Implement grenade thrower with delayed area damage indicator.
+- [x] Implement Molotov thrower that creates a temporary burning area.
+- [x] Add projectile and hazard systems if not already present.
+- [x] Add config for fire rate, projectile speed, range, damage, grenade fuse, Molotov duration, and area radius.
 
 Grenade thrower behavior:
 
@@ -349,13 +349,13 @@ Molotov thrower behavior:
 - On impact, it spawns a short explosion effect and creates a burning fire zone.
 - The fire zone deals periodic damage while active and uses its own shrinking inner circle to show when the damaging area will end.
 
-### Block 4.4 — Mage enemies `[ ]`
+### Block 4.4 — Mage enemies `[x]`
 
-- [ ] Implement summoner mage that periodically summons weak warriors.
-- [ ] Implement healer mage that heals nearby enemies.
-- [ ] Implement teleport mage that shows a target indicator before teleporting.
-- [ ] Add config for summon interval, summon count, heal radius, heal amount, teleport cooldown, teleport warning duration, and teleport range.
-- [ ] Ensure mage behavior is readable and not unfair.
+- [x] Implement summoner mage that periodically summons weak warriors.
+- [x] Implement healer mage that heals nearby enemies.
+- [x] Implement teleport mage that shows a target indicator before teleporting.
+- [x] Add config for summon interval, summon count, heal radius, heal amount, teleport cooldown, teleport warning duration, and teleport range.
+- [x] Ensure mage behavior is readable and not unfair.
 
 Mage behavior notes:
 
@@ -364,11 +364,11 @@ Mage behavior notes:
 - Teleport mage keeps distance and creates a blue target indicator before relocating; the shrinking inner circle shows when the teleport will complete.
 - Mage cooldowns and ranges are tuned longer than basic ranged attacks so their support behavior is readable during the playable checkpoint.
 
-### Block 4.5 — Combat feedback and damage grace `[ ]`
+### Block 4.5 — Combat feedback and damage grace `[x]`
 
-- [ ] Add short player invulnerability after receiving damage.
-- [ ] Show an enemy health indicator only after that enemy receives damage.
-- [ ] Hide the enemy health indicator shortly after damage feedback expires.
+- [x] Add short player invulnerability after receiving damage.
+- [x] Show an enemy health indicator only after that enemy receives damage.
+- [x] Hide the enemy health indicator shortly after damage feedback expires.
 
 ## Theme 5 — Bosses and Elite Threats `[ ]`
 

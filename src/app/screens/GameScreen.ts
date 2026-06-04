@@ -10,8 +10,13 @@ import {
   type PlayerLevelChangedData,
 } from "../../entities/player/Player";
 import { xpRequiredForLevel, xpConfig } from "../../game/config/XpConfig";
+import { playerConfig } from "../../game/config/PlayerConfig";
 import { SkillController } from "../../skills/SkillController";
 import { SkillStatus } from "../../skills/Skill";
+import { EnemyManager, EnemyManagerEvents } from "../../entities/enemies/EnemyManager";
+import type { EnemyKilledData, PlayerDamagedByEnemyData } from "../../entities/enemies/EnemyManager";
+import { WaveSpawner } from "../../game/combat/WaveSpawner";
+import { vec2DistanceSquared, type Vec2 } from "../../core/math/Vec2";
 
 export class GameScreen extends Screen {
   private app: Application;
@@ -21,6 +26,8 @@ export class GameScreen extends Screen {
   private timeScale: TimeScale;
   private player: Player | null = null;
   private skillController: SkillController | null = null;
+  private enemyManager: EnemyManager | null = null;
+  private waveSpawner: WaveSpawner | null = null;
 
   private stateLabel: Text | null = null;
   private fpsLabel: Text | null = null;
@@ -42,6 +49,9 @@ export class GameScreen extends Screen {
   private dashSkillLabel: Text | null = null;
   private teleportSkillLabel: Text | null = null;
   private explosionSkillLabel: Text | null = null;
+
+  private enemyCountLabel: Text | null = null;
+  private killCountLabel: Text | null = null;
 
   private levelUpTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -84,9 +94,22 @@ export class GameScreen extends Screen {
     );
     this.player.setSkillController(this.skillController);
 
+    this.enemyManager = new EnemyManager(
+      this.container,
+      this.container,
+      arenaBounds,
+    );
+    this.enemyManager.wireExplosions(this.skillController);
+
+    this.waveSpawner = new WaveSpawner(
+      this.enemyManager,
+      arenaBounds,
+    );
+
     this.createLabels(w);
     this.createHud(h);
     this.createSkillHud(h);
+    this.createCombatHud(w);
     this.wireSystems();
     this.updateHud();
     this.gameState.setState(GameState.Playing);
@@ -278,6 +301,30 @@ export class GameScreen extends Screen {
     this.container.addChild(this.explosionSkillLabel);
   }
 
+  private createCombatHud(w: number): void {
+    const combatStyle = new TextStyle({
+      fontFamily: "Arial",
+      fontSize: 14,
+      fill: "#cccccc",
+    });
+
+    this.enemyCountLabel = new Text({
+      text: "Enemies: 0",
+      style: combatStyle,
+    });
+    this.enemyCountLabel.anchor.set(1, 0);
+    this.enemyCountLabel.position.set(w - 20, 56);
+    this.container.addChild(this.enemyCountLabel);
+
+    this.killCountLabel = new Text({
+      text: "Kills: 0",
+      style: { ...combatStyle, fill: "#ff8888" },
+    });
+    this.killCountLabel.anchor.set(1, 0);
+    this.killCountLabel.position.set(w - 20, 76);
+    this.container.addChild(this.killCountLabel);
+  }
+
   private wireSystems(): void {
     this.gameState.events.on("state:changed", () => {
       this.updateStateLabel();
@@ -313,6 +360,24 @@ export class GameScreen extends Screen {
       });
     }
 
+    if (this.enemyManager && this.player) {
+      const playerRef = this.player;
+      this.enemyManager.events.on<EnemyKilledData>(
+        EnemyManagerEvents.ENEMY_KILLED,
+        (data) => {
+          playerRef.addXp(data.rewardXp);
+          this.updateCombatHud();
+        },
+      );
+
+      this.enemyManager.events.on<PlayerDamagedByEnemyData>(
+        EnemyManagerEvents.PLAYER_DAMAGED,
+        (data) => {
+          playerRef.takeDamage(data.amount);
+        },
+      );
+    }
+
     const fixedUpdate = (dt: number) => {
       if (this.gameState.isCombatFlowBlocked()) return;
       this.fixedTick(dt);
@@ -322,6 +387,7 @@ export class GameScreen extends Screen {
       this.handleInput();
       this.updateLabels(dt);
       this.updateSkillHud();
+      this.updateCombatHud();
     };
 
     this.gameLoop.onFixedUpdate(fixedUpdate);
@@ -340,6 +406,36 @@ export class GameScreen extends Screen {
     if (!this.player) return;
     const inputBlocked = this.gameState.isInputBlocked();
     this.player.update(dt, this.input, inputBlocked);
+
+    if (this.waveSpawner) {
+      this.waveSpawner.update(dt);
+    }
+
+    if (this.enemyManager) {
+      const playerPos = this.player.state.position;
+      const playerRadius = playerConfig.collisionRadius;
+
+      this.enemyManager.update(dt, playerPos, playerRadius, (amount) => {
+        this.player?.takeDamage(amount);
+      });
+
+      if (this.skillController?.isDashing()) {
+        this.checkDashDamage(playerPos);
+      }
+    }
+  }
+
+  private checkDashDamage(playerPos: Vec2): void {
+    if (!this.skillController || !this.enemyManager) return;
+    const dashConfig = this.skillController.dash.dashConfig;
+    const enemies = this.enemyManager.getEnemies();
+    for (const enemy of enemies) {
+      if (!enemy.state.alive) continue;
+      const combined = dashConfig.hitRadius + enemy.config.collisionRadius;
+      if (vec2DistanceSquared(playerPos, enemy.state.position) <= combined * combined) {
+        enemy.takeDamage(dashConfig.damage);
+      }
+    }
   }
 
   private handleInput(): void {
@@ -380,8 +476,11 @@ export class GameScreen extends Screen {
     this.timeScale.reset();
     this.player?.reset();
     this.gameLoop.reset();
+    this.enemyManager?.reset();
+    this.waveSpawner?.reset();
     this.gameState.setState(GameState.Playing);
     this.updateHud();
+    this.updateCombatHud();
   }
 
   private formatSkillStatus(
@@ -446,6 +545,16 @@ export class GameScreen extends Screen {
           : exStatus === SkillStatus.Ready
             ? "#88ff88"
             : "#999999";
+    }
+  }
+
+  private updateCombatHud(): void {
+    if (!this.enemyManager) return;
+    if (this.enemyCountLabel) {
+      this.enemyCountLabel.text = `Enemies: ${this.enemyManager.enemyCount}`;
+    }
+    if (this.killCountLabel) {
+      this.killCountLabel.text = `Kills: ${this.enemyManager.killCount}`;
     }
   }
 
@@ -526,6 +635,11 @@ export class GameScreen extends Screen {
     this.skillController?.destroy();
     this.skillController = null;
 
+    this.waveSpawner = null;
+
+    this.enemyManager?.destroy();
+    this.enemyManager = null;
+
     this.player?.destroy();
     this.player = null;
 
@@ -551,6 +665,8 @@ export class GameScreen extends Screen {
     this.dashSkillLabel?.destroy();
     this.teleportSkillLabel?.destroy();
     this.explosionSkillLabel?.destroy();
+    this.enemyCountLabel?.destroy();
+    this.killCountLabel?.destroy();
 
     this.stateLabel = null;
     this.fpsLabel = null;
@@ -570,5 +686,7 @@ export class GameScreen extends Screen {
     this.dashSkillLabel = null;
     this.teleportSkillLabel = null;
     this.explosionSkillLabel = null;
+    this.enemyCountLabel = null;
+    this.killCountLabel = null;
   }
 }

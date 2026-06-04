@@ -52,6 +52,8 @@ export class Player {
 
   private arenaBounds: ArenaBounds;
   private skillController: SkillController | null = null;
+  private invulnerabilityTimer = 0;
+  private static readonly INVULNERABILITY_DURATION = 1;
 
   constructor(
     parentContainer: Container,
@@ -87,6 +89,12 @@ export class Player {
 
   update(dt: number, input: InputManager, inputBlocked: boolean): void {
     if (!this.state.alive) return;
+
+    if (this.invulnerabilityTimer > 0) {
+      this.invulnerabilityTimer -= dt;
+      this.visual.container.alpha =
+        Math.floor(this.invulnerabilityTimer * 10) % 2 === 0 ? 0.5 : 1;
+    }
 
     if (this.skillController) {
       this.skillController.update(
@@ -189,8 +197,12 @@ export class Player {
 
   takeDamage(amount: number): void {
     if (!this.state.alive) return;
+    if (this.invulnerabilityTimer > 0) return;
+    if (this.skillController?.isDashing()) return;
     const actual = this.state.takeDamage(amount);
     if (actual <= 0) return;
+
+    this.invulnerabilityTimer = Player.INVULNERABILITY_DURATION;
 
     this.events.emit(PlayerEvents.HP_CHANGED, {
       hp: this.state.hp,
@@ -247,6 +259,7 @@ export class Player {
     this.state.reset(this.config, xpConfig.startingLevel, { x: 0, y: 0 });
     this.spawnAtCenter();
     this.visual.setAlpha(1);
+    this.invulnerabilityTimer = 0;
     this.skillController?.reset();
   }
 
