@@ -191,32 +191,32 @@ Recommended architectural idea:
 
 ## 3. Progress Plan
 
-## Theme 1 — Project Foundation `[ ]`
+## Theme 1 — Project Foundation `[x]`
 
 Goal: create a stable PixiJS v8 + TypeScript game foundation that can run, update, render, and be extended safely.
 
-### Block 1.1 — Project setup `[ ]`
+### Block 1.1 — Project setup `[x]`
 
-- [ ] Create or verify a PixiJS v8 project setup.
-- [ ] Add a clean PixiJS folder structure for screens, scripts, entity factories or reusable view/component builders, typed config data, art, audio, visual effects, UI, and tests.
-- [ ] Add or verify the browser app bootstrap and initial screen flow.
-- [ ] Add basic input bindings: movement, dash, teleport, explosion, pause, restart.
-- [ ] Confirm the app starts in the browser and displays a placeholder game screen.
+- [x] Create or verify a PixiJS v8 project setup.
+- [x] Add a clean PixiJS folder structure for screens, scripts, entity factories or reusable view/component builders, typed config data, art, audio, visual effects, UI, and tests.
+- [x] Add or verify the browser app bootstrap and initial screen flow.
+- [x] Add basic input bindings: movement, dash, teleport, explosion, pause, restart.
+- [x] Confirm the app starts in the browser and displays a placeholder game screen.
 
-### Block 1.2 — Game loop and state `[ ]`
+### Block 1.2 — Game loop and state `[x]`
 
-- [ ] Implement a central game application/screen responsible for wiring core systems.
-- [ ] Use the PixiJS ticker for frame updates and a fixed-step accumulator where deterministic gameplay updates are useful.
-- [ ] Add delta-time based updates for rendering, UI, timers, and non-fixed systems.
-- [ ] Add `GameState` with at least: `Boot`, `Playing`, `LevelUpSelection`, `TeleportTargeting`, `Paused`, `Victory`, `Defeat`.
-- [ ] Add gameplay time-scale support so the game can slow down during teleport targeting while UI and pointer feedback remain responsive.
+- [x] Implement a central game application/screen responsible for wiring core systems.
+- [x] Use the PixiJS ticker for frame updates and a fixed-step accumulator where deterministic gameplay updates are useful.
+- [x] Add delta-time based updates for rendering, UI, timers, and non-fixed systems.
+- [x] Add `GameState` with at least: `Boot`, `Playing`, `LevelUpSelection`, `TeleportTargeting`, `Paused`, `Victory`, `Defeat`.
+- [x] Add gameplay time-scale support so the game can slow down during teleport targeting while UI and pointer feedback remain responsive.
 
-### Block 1.3 — Core utilities `[ ]`
+### Block 1.3 — Core utilities `[x]`
 
-- [ ] Add helper utilities for 2D movement, vector math, interpolation, clamping, and angle calculations.
-- [ ] Add clamp, distance, normalize, random, and weighted-random helpers if needed.
-- [ ] Add circle/radius overlap helpers for skills and hazards.
-- [ ] Add a simple typed event system or lightweight gameplay event service for events such as level up, enemy killed, player damaged, skill used, and run finished.
+- [x] Add helper utilities for 2D movement, vector math, interpolation, clamping, and angle calculations.
+- [x] Add clamp, distance, normalize, random, and weighted-random helpers if needed.
+- [x] Add circle/radius overlap helpers for skills and hazards.
+- [x] Add a simple typed event system or lightweight gameplay event service for events such as level up, enemy killed, player damaged, skill used, and run finished.
 
 ## Theme 2 — Player Core `[ ]`
 
