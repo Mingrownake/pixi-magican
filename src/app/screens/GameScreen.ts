@@ -16,6 +16,8 @@ import { SkillStatus } from "../../skills/Skill";
 import { EnemyManager, EnemyManagerEvents } from "../../entities/enemies/EnemyManager";
 import type { EnemyKilledData, PlayerDamagedByEnemyData } from "../../entities/enemies/EnemyManager";
 import { WaveSpawner } from "../../game/combat/WaveSpawner";
+import { BossManager, BossManagerEvents } from "../../entities/bosses/BossManager";
+import type { BossSpawnedData, BossDefeatedData, BossPlayerDamagedData } from "../../entities/bosses/BossManager";
 import { vec2DistanceSquared, type Vec2 } from "../../core/math/Vec2";
 
 export class GameScreen extends Screen {
@@ -28,6 +30,7 @@ export class GameScreen extends Screen {
   private skillController: SkillController | null = null;
   private enemyManager: EnemyManager | null = null;
   private waveSpawner: WaveSpawner | null = null;
+  private bossManager: BossManager | null = null;
 
   private stateLabel: Text | null = null;
   private fpsLabel: Text | null = null;
@@ -52,6 +55,7 @@ export class GameScreen extends Screen {
 
   private enemyCountLabel: Text | null = null;
   private killCountLabel: Text | null = null;
+  private bossCountLabel: Text | null = null;
 
   private levelUpTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -105,6 +109,15 @@ export class GameScreen extends Screen {
       this.enemyManager,
       arenaBounds,
     );
+
+    this.bossManager = new BossManager(
+      this.enemyManager,
+      this.container,
+      this.container,
+      this.container,
+      arenaBounds,
+    );
+    this.wireBossEvents();
 
     this.createLabels(w);
     this.createHud(h);
@@ -402,6 +415,33 @@ export class GameScreen extends Screen {
     this.app.ticker.add(this.tickerUpdate);
   }
 
+  private wireBossEvents(): void {
+    if (!this.bossManager || !this.player) return;
+    const playerRef = this.player;
+
+    this.bossManager.events.on<BossSpawnedData>(
+      BossManagerEvents.BOSS_SPAWNED,
+      () => {
+        this.waveSpawner?.setBossActive(true);
+      },
+    );
+
+    this.bossManager.events.on<BossDefeatedData>(
+      BossManagerEvents.BOSS_DEFEATED,
+      (data) => {
+        this.waveSpawner?.setBossActive(false);
+        playerRef.addXp(data.rewardXp);
+      },
+    );
+
+    this.bossManager.events.on<BossPlayerDamagedData>(
+      BossManagerEvents.PLAYER_DAMAGED,
+      (data) => {
+        playerRef.takeDamage(data.amount);
+      },
+    );
+  }
+
   private fixedTick(dt: number): void {
     if (!this.player) return;
     const inputBlocked = this.gameState.isInputBlocked();
@@ -409,6 +449,10 @@ export class GameScreen extends Screen {
 
     if (this.waveSpawner) {
       this.waveSpawner.update(dt);
+    }
+
+    if (this.bossManager) {
+      this.bossManager.update(dt);
     }
 
     if (this.enemyManager) {
@@ -478,6 +522,8 @@ export class GameScreen extends Screen {
     this.gameLoop.reset();
     this.enemyManager?.reset();
     this.waveSpawner?.reset();
+    this.waveSpawner?.setBossActive(false);
+    this.bossManager?.reset();
     this.gameState.setState(GameState.Playing);
     this.updateHud();
     this.updateCombatHud();
@@ -637,6 +683,9 @@ export class GameScreen extends Screen {
 
     this.waveSpawner = null;
 
+    this.bossManager?.destroy();
+    this.bossManager = null;
+
     this.enemyManager?.destroy();
     this.enemyManager = null;
 
@@ -667,6 +716,7 @@ export class GameScreen extends Screen {
     this.explosionSkillLabel?.destroy();
     this.enemyCountLabel?.destroy();
     this.killCountLabel?.destroy();
+    this.bossCountLabel?.destroy();
 
     this.stateLabel = null;
     this.fpsLabel = null;
@@ -688,5 +738,6 @@ export class GameScreen extends Screen {
     this.explosionSkillLabel = null;
     this.enemyCountLabel = null;
     this.killCountLabel = null;
+    this.bossCountLabel = null;
   }
 }

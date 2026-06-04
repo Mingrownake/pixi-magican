@@ -370,52 +370,52 @@ Mage behavior notes:
 - [x] Show an enemy health indicator only after that enemy receives damage.
 - [x] Hide the enemy health indicator shortly after damage feedback expires.
 
-## Theme 5 — Bosses and Elite Threats `[ ]`
+## Theme 5 — Bosses and Elite Threats `[x]`
 
 Goal: add the 4-minute danger spike with bosses or very strong enemies.
 
-### Block 5.1 — Boss foundation `[ ]`
+### Block 5.1 — Boss foundation `[x]`
 
-- [ ] Create base `Boss` screen/script or boss behavior layer.
-- [ ] Add boss config definitions.
-- [ ] Add boss health bar UI.
-- [ ] Add boss spawn event at exactly 4 minutes.
-- [ ] Ensure the boss phase can coexist with regular enemies or override regular spawning depending on config.
+- [x] Create base `Boss` screen/script or boss behavior layer.
+- [x] Add boss config definitions.
+- [x] Add boss health bar UI.
+- [x] Add boss spawn event at exactly 4 minutes.
+- [x] Ensure the boss phase can coexist with regular enemies or override regular spawning depending on config.
 
-### Block 5.2 — Area attack boss `[ ]`
+### Block 5.2 — Area attack boss `[x]`
 
 Boss description: attacks an area with a clear warning indicator showing where the attack will land.
 
-- [ ] Implement attack wind-up.
-- [ ] Show area warning indicator before damage.
-- [ ] Apply damage after wind-up.
-- [ ] Add config for radius, damage, wind-up time, cooldown, and attack pattern.
+- [x] Implement attack wind-up.
+- [x] Show area warning indicator before damage.
+- [x] Apply damage after wind-up.
+- [x] Add config for radius, damage, wind-up time, cooldown, and attack pattern.
 
-### Block 5.3 — Tank boss `[ ]`
+### Block 5.3 — Tank boss `[x]`
 
 Boss description: a boss with very high HP and simple but dangerous pressure.
 
-- [ ] Implement high-HP boss with chase behavior.
-- [ ] Add heavy contact damage or periodic slam if desired.
-- [ ] Add config for HP, speed, damage, and optional enrage behavior.
+- [x] Implement high-HP boss with chase behavior.
+- [x] Add heavy contact damage or periodic slam if desired.
+- [x] Add config for HP, speed, damage, and optional enrage behavior.
 
-### Block 5.4 — Horde boss `[ ]`
+### Block 5.4 — Horde boss `[x]`
 
 Boss description: the boss encounter is represented by an organized horde of weak warriors.
 
-- [ ] Implement horde boss phase as a spawn pattern, not necessarily a single entity.
-- [ ] Spawn many weak warriors in waves.
-- [ ] Add config for total count, wave size, spawn interval, and spawn positions.
-- [ ] Mark the horde boss as defeated when enough horde enemies are killed or when the survival timer ends.
+- [x] Implement horde boss phase as a spawn pattern, not necessarily a single entity.
+- [x] Spawn many weak warriors in waves.
+- [x] Add config for total count, wave size, spawn interval, and spawn positions.
+- [x] Mark the horde boss as defeated when enough horde enemies are killed or when the survival timer ends.
 
-### Block 5.5 — Meteor summoner boss `[ ]`
+### Block 5.5 — Meteor summoner boss `[x]`
 
 Boss description: a spellcaster boss summons meteors. Each meteor shows an impact indicator before landing. When a meteor lands, it deals damage and spawns warriors.
 
-- [ ] Implement meteor warning indicator.
-- [ ] Apply impact damage after warning delay.
-- [ ] Spawn warriors at or near the impact point.
-- [ ] Add config for meteor count, warning duration, impact radius, impact damage, summon count, and cast cooldown.
+- [x] Implement meteor warning indicator.
+- [x] Apply impact damage after warning delay.
+- [x] Spawn warriors at or near the impact point.
+- [x] Add config for meteor count, warning duration, impact radius, impact damage, summon count, and cast cooldown.
 
 ## Theme 6 — Arena, Timer, Waves, and Spawning `[ ]`
 

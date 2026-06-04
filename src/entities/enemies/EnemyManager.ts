@@ -66,7 +66,7 @@ export class EnemyManager {
   readonly projectiles: ProjectileManager;
   readonly hazards: HazardManager;
 
-  private configMap: Record<EnemyType, BaseEnemyConfig> = {
+  private configMap: Partial<Record<EnemyType, BaseEnemyConfig>> = {
     warrior: warriorConfig,
     fast_warrior: fastWarriorConfig,
     shooter: shooterConfig,
@@ -112,12 +112,20 @@ export class EnemyManager {
 
   spawnEnemy(type: EnemyType, position: Vec2): Enemy {
     const config = this.configMap[type];
+    if (!config) {
+      throw new Error(`No config for enemy type: ${type}`);
+    }
     const id = this.nextId++;
     const enemy = this.createEnemy(config, id);
     enemy.setPosition(position);
     this.wireEnemyEvents(enemy);
     this.enemies.push(enemy);
     return enemy;
+  }
+
+  registerExternalEnemy(enemy: Enemy): void {
+    this.wireEnemyEvents(enemy);
+    this.enemies.push(enemy);
   }
 
   private createEnemy(config: BaseEnemyConfig, id: number): Enemy {

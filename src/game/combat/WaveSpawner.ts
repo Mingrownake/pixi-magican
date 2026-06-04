@@ -2,7 +2,7 @@ import type { Vec2 } from "../../core/math/Vec2";
 import { randomRange } from "../../core/math/MathUtils";
 import type { EnemyType } from "../../game/config/EnemyConfig";
 import type { EnemyManager } from "../../entities/enemies/EnemyManager";
-import type { ArenaBounds } from "../player/Player";
+import type { ArenaBounds } from "../../entities/player/Player";
 
 export interface SpawnWaveConfig {
   enemyTypes: EnemyType[];
@@ -22,6 +22,7 @@ export class WaveSpawner {
   private spawnTimer: number;
   private gameTime = 0;
   private config: SpawnWaveConfig;
+  private bossActive = false;
 
   constructor(
     enemyManager: EnemyManager,
@@ -34,8 +35,15 @@ export class WaveSpawner {
     this.spawnTimer = 1;
   }
 
+  setBossActive(active: boolean): void {
+    this.bossActive = active;
+  }
+
   update(dt: number): void {
     this.gameTime += dt;
+
+    if (this.bossActive) return;
+
     this.spawnTimer -= dt;
 
     if (this.spawnTimer <= 0) {

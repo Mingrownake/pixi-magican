@@ -6,7 +6,11 @@ export type EnemyType =
   | "molotov_thrower"
   | "summoner_mage"
   | "healer_mage"
-  | "teleport_mage";
+  | "teleport_mage"
+  | "area_attack_boss"
+  | "tank_boss"
+  | "horde_boss"
+  | "meteor_summoner_boss";
 
 export type BaseEnemyConfig = {
   type: EnemyType;

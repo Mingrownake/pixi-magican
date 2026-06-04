@@ -81,6 +81,32 @@ export class EnemyVisual {
         this.body.fill({ color: "#3366cc" });
         this.body.stroke({ color: "#5588ff", width: 2 });
         break;
+      case "area_attack_boss":
+        this.body.circle(0, 0, this.radius);
+        this.body.fill({ color: "#aa2200" });
+        this.body.stroke({ color: "#ff4400", width: 3 });
+        this.body.circle(0, 0, this.radius * 0.6);
+        this.body.stroke({ color: "#ff6622", width: 2 });
+        break;
+      case "tank_boss":
+        this.body.circle(0, 0, this.radius);
+        this.body.fill({ color: "#555566" });
+        this.body.stroke({ color: "#8888aa", width: 3 });
+        this.body.rect(-this.radius * 0.4, -this.radius * 0.4, this.radius * 0.8, this.radius * 0.8);
+        this.body.stroke({ color: "#aaaacc", width: 2 });
+        break;
+      case "horde_boss":
+        this.body.circle(0, 0, this.radius);
+        this.body.fill({ color: "#886622" });
+        this.body.stroke({ color: "#bbaa44", width: 3 });
+        break;
+      case "meteor_summoner_boss":
+        this.body.circle(0, 0, this.radius);
+        this.body.fill({ color: "#442266" });
+        this.body.stroke({ color: "#7744aa", width: 3 });
+        this.body.circle(0, 0, this.radius * 0.4);
+        this.body.fill({ color: "#9966dd" });
+        break;
     }
   }
 
@@ -134,6 +160,15 @@ export class EnemyVisual {
         this.hpBarFill.visible = false;
       }
     }
+  }
+
+  showEnrageEffect(): void {
+    this.body.clear();
+    this.body.circle(0, 0, this.radius);
+    this.body.fill({ color: "#cc2222" });
+    this.body.stroke({ color: "#ff4444", width: 4 });
+    this.body.circle(0, 0, this.radius * 0.7);
+    this.body.stroke({ color: "#ff6644", width: 2 });
   }
 
   destroy(): void {
