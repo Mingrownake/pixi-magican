@@ -5,6 +5,7 @@ import {
   vec2Normalize,
   vec2Subtract,
 } from "../../core/math/Vec2";
+import type { Vec2 } from "../../core/math/Vec2";
 import { clamp } from "../../core/math/MathUtils";
 import { GameEventEmitter } from "../../core/events/GameEventEmitter";
 import { PlayerState } from "./PlayerState";
@@ -15,6 +16,7 @@ import {
 } from "../../game/config/PlayerConfig";
 import { xpConfig, xpRequiredForLevel } from "../../game/config/XpConfig";
 import type { InputManager } from "../../input/InputManager";
+import type { SkillController } from "../../skills/SkillController";
 
 export const PlayerEvents = {
   DAMAGED: "player:damaged",
@@ -49,6 +51,7 @@ export class Player {
   readonly config: PlayerConfig;
 
   private arenaBounds: ArenaBounds;
+  private skillController: SkillController | null = null;
 
   constructor(
     parentContainer: Container,
@@ -71,6 +74,10 @@ export class Player {
     this.spawnAtCenter();
   }
 
+  setSkillController(controller: SkillController): void {
+    this.skillController = controller;
+  }
+
   private spawnAtCenter(): void {
     const cx = this.arenaBounds.x + this.arenaBounds.width / 2;
     const cy = this.arenaBounds.y + this.arenaBounds.height / 2;
@@ -81,7 +88,29 @@ export class Player {
   update(dt: number, input: InputManager, inputBlocked: boolean): void {
     if (!this.state.alive) return;
 
-    if (!inputBlocked) {
+    if (this.skillController) {
+      this.skillController.update(
+        dt,
+        input,
+        this.state,
+        this.state.position,
+        inputBlocked,
+      );
+
+      const dashVelocity = this.skillController.getDashVelocity();
+      if (dashVelocity) {
+        const displacement = vec2Scale(dashVelocity, dt);
+        this.state.position = vec2Add(this.state.position, displacement);
+        this.clampToArena();
+        this.visual.updatePosition(this.state.position);
+      } else if (!inputBlocked) {
+        this.applyMovement(dt, input);
+      } else {
+        this.state.velocity = { x: 0, y: 0 };
+      }
+
+      this.visual.setAlpha(this.skillController.getPlayerVisualAlpha());
+    } else if (!inputBlocked) {
       this.applyMovement(dt, input);
     } else {
       this.state.velocity = { x: 0, y: 0 };
@@ -152,6 +181,12 @@ export class Player {
     );
   }
 
+  teleportTo(pos: Vec2): void {
+    this.state.position = { x: pos.x, y: pos.y };
+    this.clampToArena();
+    this.visual.updatePosition(this.state.position);
+  }
+
   takeDamage(amount: number): void {
     if (!this.state.alive) return;
     const actual = this.state.takeDamage(amount);
@@ -205,12 +240,14 @@ export class Player {
 
   setArenaBounds(bounds: ArenaBounds): void {
     this.arenaBounds = bounds;
+    this.skillController?.setArenaBounds(bounds);
   }
 
   reset(): void {
     this.state.reset(this.config, xpConfig.startingLevel, { x: 0, y: 0 });
     this.spawnAtCenter();
     this.visual.setAlpha(1);
+    this.skillController?.reset();
   }
 
   destroy(): void {

@@ -10,6 +10,8 @@ import {
   type PlayerLevelChangedData,
 } from "../../entities/player/Player";
 import { xpRequiredForLevel, xpConfig } from "../../game/config/XpConfig";
+import { SkillController } from "../../skills/SkillController";
+import { SkillStatus } from "../../skills/Skill";
 
 export class GameScreen extends Screen {
   private app: Application;
@@ -18,6 +20,7 @@ export class GameScreen extends Screen {
   private gameState: GameStateManager;
   private timeScale: TimeScale;
   private player: Player | null = null;
+  private skillController: SkillController | null = null;
 
   private stateLabel: Text | null = null;
   private fpsLabel: Text | null = null;
@@ -35,6 +38,10 @@ export class GameScreen extends Screen {
   private hpBarFill: Graphics | null = null;
   private mpBarBg: Graphics | null = null;
   private mpBarFill: Graphics | null = null;
+
+  private dashSkillLabel: Text | null = null;
+  private teleportSkillLabel: Text | null = null;
+  private explosionSkillLabel: Text | null = null;
 
   private levelUpTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -57,18 +64,29 @@ export class GameScreen extends Screen {
     const margin = 40;
     const w = this.app.screen.width;
     const h = this.app.screen.height;
-
-    this.createArenaVisual(margin, w, h);
-
-    this.player = new Player(this.container, undefined, {
+    const arenaBounds = {
       x: margin,
       y: margin,
       width: w - margin * 2,
       height: h - margin * 2,
-    });
+    };
+
+    this.createArenaVisual(margin, w, h);
+
+    this.player = new Player(this.container, undefined, arenaBounds);
+
+    this.skillController = new SkillController(
+      this.container,
+      this.timeScale,
+      this.gameState,
+      arenaBounds,
+      (pos) => this.player?.teleportTo(pos),
+    );
+    this.player.setSkillController(this.skillController);
 
     this.createLabels(w);
-    this.createHud(w, h);
+    this.createHud(h);
+    this.createSkillHud(h);
     this.wireSystems();
     this.updateHud();
     this.gameState.setState(GameState.Playing);
@@ -121,7 +139,7 @@ export class GameScreen extends Screen {
 
     this.controlsLabel = new Text({
       text: [
-        "WASD - Move | LMB - Dash | Q - Teleport | E - Explosion",
+        "WASD - Move | LMB - Dash | Q - Teleport (Lv5) | E - Explosion (Lv8)",
         "Esc - Pause | R - Restart | T - Test XP (+10)",
       ].join("\n"),
       style: new TextStyle({
@@ -139,7 +157,7 @@ export class GameScreen extends Screen {
     this.container.addChild(this.controlsLabel);
   }
 
-  private createHud(_w: number, h: number): void {
+  private createHud(h: number): void {
     const hudX = 20;
     const hudY = h - 80;
     const barWidth = 200;
@@ -227,6 +245,39 @@ export class GameScreen extends Screen {
     this.container.addChild(this.levelLabel);
   }
 
+  private createSkillHud(h: number): void {
+    const skillY = h - 130;
+    const skillStyle = new TextStyle({
+      fontFamily: "Arial",
+      fontSize: 13,
+      fill: "#cccccc",
+    });
+
+    this.dashSkillLabel = new Text({
+      text: "[Dash] Ready",
+      style: skillStyle,
+    });
+    this.dashSkillLabel.anchor.set(0, 0);
+    this.dashSkillLabel.position.set(20, skillY);
+    this.container.addChild(this.dashSkillLabel);
+
+    this.teleportSkillLabel = new Text({
+      text: "[Teleport] Lv5",
+      style: skillStyle,
+    });
+    this.teleportSkillLabel.anchor.set(0, 0);
+    this.teleportSkillLabel.position.set(140, skillY);
+    this.container.addChild(this.teleportSkillLabel);
+
+    this.explosionSkillLabel = new Text({
+      text: "[Explosion] Lv8",
+      style: skillStyle,
+    });
+    this.explosionSkillLabel.anchor.set(0, 0);
+    this.explosionSkillLabel.position.set(280, skillY);
+    this.container.addChild(this.explosionSkillLabel);
+  }
+
   private wireSystems(): void {
     this.gameState.events.on("state:changed", () => {
       this.updateStateLabel();
@@ -270,6 +321,7 @@ export class GameScreen extends Screen {
     const variableUpdate = (dt: number) => {
       this.handleInput();
       this.updateLabels(dt);
+      this.updateSkillHud();
     };
 
     this.gameLoop.onFixedUpdate(fixedUpdate);
@@ -325,10 +377,76 @@ export class GameScreen extends Screen {
       clearTimeout(this.levelUpTimer);
       this.levelUpTimer = null;
     }
+    this.timeScale.reset();
     this.player?.reset();
     this.gameLoop.reset();
     this.gameState.setState(GameState.Playing);
     this.updateHud();
+  }
+
+  private formatSkillStatus(
+    status: SkillStatus,
+    cooldownRemaining: number,
+  ): string {
+    switch (status) {
+      case SkillStatus.Locked:
+        return "Locked";
+      case SkillStatus.Ready:
+        return "Ready";
+      case SkillStatus.Active:
+        return "Active";
+      case SkillStatus.CoolingDown:
+        return `${cooldownRemaining.toFixed(1)}s`;
+      case SkillStatus.InsufficientMana:
+        return "No MP";
+    }
+  }
+
+  private updateSkillHud(): void {
+    if (!this.player || !this.skillController) return;
+    const ps = this.player.state;
+    const lvl = ps.level;
+
+    const dashStatus = this.skillController.dash.getStatus(ps, lvl);
+    const dashText = this.formatSkillStatus(
+      dashStatus,
+      this.skillController.dash.cooldownRemaining,
+    );
+    if (this.dashSkillLabel) {
+      this.dashSkillLabel.text = `[Dash] ${dashText}`;
+      this.dashSkillLabel.style.fill =
+        dashStatus === SkillStatus.Ready ? "#88ff88" : "#999999";
+    }
+
+    const tpStatus = this.skillController.teleport.getStatus(ps, lvl);
+    const tpText = this.formatSkillStatus(
+      tpStatus,
+      this.skillController.teleport.cooldownRemaining,
+    );
+    if (this.teleportSkillLabel) {
+      this.teleportSkillLabel.text = `[Q Teleport] ${tpText}`;
+      this.teleportSkillLabel.style.fill =
+        tpStatus === SkillStatus.Locked
+          ? "#666666"
+          : tpStatus === SkillStatus.Ready
+            ? "#88ff88"
+            : "#999999";
+    }
+
+    const exStatus = this.skillController.explosion.getStatus(ps, lvl);
+    const exText = this.formatSkillStatus(
+      exStatus,
+      this.skillController.explosion.cooldownRemaining,
+    );
+    if (this.explosionSkillLabel) {
+      this.explosionSkillLabel.text = `[E Explosion] ${exText}`;
+      this.explosionSkillLabel.style.fill =
+        exStatus === SkillStatus.Locked
+          ? "#666666"
+          : exStatus === SkillStatus.Ready
+            ? "#88ff88"
+            : "#999999";
+    }
   }
 
   private updateHud(): void {
@@ -405,6 +523,9 @@ export class GameScreen extends Screen {
       this.tickerUpdate = null;
     }
 
+    this.skillController?.destroy();
+    this.skillController = null;
+
     this.player?.destroy();
     this.player = null;
 
@@ -427,6 +548,9 @@ export class GameScreen extends Screen {
     this.mpBarFill?.destroy();
     this.xpBarBg?.destroy();
     this.xpBarFill?.destroy();
+    this.dashSkillLabel?.destroy();
+    this.teleportSkillLabel?.destroy();
+    this.explosionSkillLabel?.destroy();
 
     this.stateLabel = null;
     this.fpsLabel = null;
@@ -443,5 +567,8 @@ export class GameScreen extends Screen {
     this.mpBarFill = null;
     this.xpBarBg = null;
     this.xpBarFill = null;
+    this.dashSkillLabel = null;
+    this.teleportSkillLabel = null;
+    this.explosionSkillLabel = null;
   }
 }

@@ -247,58 +247,58 @@ Goal: create the player mage with movement, stats, health, mana, regeneration, e
 - [x] Trigger level-up flow when XP reaches the requirement.
 - [x] Pause or block combat flow while upgrade cards are being selected.
 
-## Theme 3 — Player Skills `[ ]`
+## Theme 3 — Player Skills `[x]`
 
 Goal: implement three configurable mage skills with cooldown, mana cost, unlock level, and clear feedback.
 
-### Block 3.1 — Shared skill framework `[ ]`
+### Block 3.1 — Shared skill framework `[x]`
 
-- [ ] Create a common `Skill` base script or typed config object-driven skill model.
-- [ ] Add cooldown tracking.
-- [ ] Add mana cost checks.
-- [ ] Add unlock level checks.
-- [ ] Add config typed config objects or config scripts for all skill values.
-- [ ] Expose skill state to UI: locked, ready, cooling down, insufficient mana.
+- [x] Create a common `Skill` base script or typed config object-driven skill model.
+- [x] Add cooldown tracking.
+- [x] Add mana cost checks.
+- [x] Add unlock level checks.
+- [x] Add config typed config objects or config scripts for all skill values.
+- [x] Expose skill state to UI: locked, ready, cooling down, insufficient mana.
 
-### Block 3.2 — Dash skill: left mouse button `[ ]`
+### Block 3.2 — Dash skill: left mouse button `[x]`
 
 Skill description: when the player presses left mouse button, the mage dashes toward the mouse pointer, passes through enemies, and damages enemies touched during the dash.
 
-- [ ] Implement dash direction from player position to mouse pointer.
-- [ ] Add config values: mana cost, cooldown, dash distance, dash duration, damage, hit radius, invulnerability or collision bypass behavior if needed.
-- [ ] Move the player quickly during the dash using `custom custom movement/collision body` or a kinematic 2D movement controller-friendly logic.
-- [ ] Allow passing through enemies during dash or ignore enemy body blocking during dash.
-- [ ] Damage each enemy only once per dash activation.
-- [ ] Add visual feedback for dash movement, such as trail, afterimage, or short motion effect.
-- [ ] Add cooldown and mana consumption.
+- [x] Implement dash direction from player position to mouse pointer.
+- [x] Add config values: mana cost, cooldown, dash distance, dash duration, damage, hit radius, invulnerability or collision bypass behavior if needed.
+- [x] Move the player quickly during the dash using `custom custom movement/collision body` or a kinematic 2D movement controller-friendly logic.
+- [x] Allow passing through enemies during dash or ignore enemy body blocking during dash.
+- [x] Damage each enemy only once per dash activation.
+- [x] Add visual feedback for dash movement, such as trail, afterimage, or short motion effect.
+- [x] Add cooldown and mana consumption.
 
-### Block 3.3 — Teleport skill: Q, unlock level 5 `[ ]`
+### Block 3.3 — Teleport skill: Q, unlock level 5 `[x]`
 
 Skill description: at level 5, the player unlocks teleport. When pressing `Q`, the mage disappears, the game slows down, and the mouse cursor receives a circular indicator. The circle shrinks during a 2-second targeting window. The player must choose a valid point. If the player does not click, the mage teleports to the last valid pointer position when the timer ends.
 
-- [ ] Lock teleport until player level 5.
-- [ ] Add config values: mana cost, cooldown, max radius, targeting duration, time scale during targeting, fade/disappear duration, reappear duration.
-- [ ] On `Q`, enter teleport targeting state if cooldown and mana allow.
-- [ ] Make the player visually disappear or fade during targeting.
-- [ ] Slow the game using `Time.timeScale` with unscaled UI time where needed while keeping UI usable.
-- [ ] Show a radius indicator around the player for max teleport range.
-- [ ] Show a cursor indicator circle that shrinks over 2 seconds.
-- [ ] Clamp target position to valid radius.
-- [ ] Confirm teleport by left click during targeting.
-- [ ] Auto-confirm teleport to the last valid pointer position when the targeting timer ends.
-- [ ] Consume mana and start cooldown only when teleport actually activates.
-- [ ] Restore normal time scale after teleport.
+- [x] Lock teleport until player level 5.
+- [x] Add config values: mana cost, cooldown, max radius, targeting duration, time scale during targeting, fade/disappear duration, reappear duration.
+- [x] On `Q`, enter teleport targeting state if cooldown and mana allow.
+- [x] Make the player visually disappear or fade during targeting.
+- [x] Slow the game using `Time.timeScale` with unscaled UI time where needed while keeping UI usable.
+- [x] Show a radius indicator around the player for max teleport range.
+- [x] Show a cursor indicator circle that shrinks over 2 seconds.
+- [x] Clamp target position to valid radius.
+- [x] Confirm teleport by left click during targeting.
+- [x] Auto-confirm teleport to the last valid pointer position when the targeting timer ends.
+- [x] Consume mana and start cooldown only when teleport actually activates.
+- [x] Restore normal time scale after teleport.
 
-### Block 3.4 — Explosion skill: unlock level 8 `[ ]`
+### Block 3.4 — Explosion skill: unlock level 8 `[x]`
 
 Skill description: at level 8, the player unlocks an area explosion centered on the player.
 
-- [ ] Lock explosion until player level 8.
-- [ ] Add config values: mana cost, cooldown, radius, damage, knockback if used, visual duration.
-- [ ] Activate explosion from a dedicated input key selected by the project implementation.
-- [ ] Damage all enemies inside the radius.
-- [ ] Add clear visual effect for the explosion radius.
-- [ ] Add cooldown and mana consumption.
+- [x] Lock explosion until player level 8.
+- [x] Add config values: mana cost, cooldown, radius, damage, knockback if used, visual duration.
+- [x] Activate explosion from a dedicated input key selected by the project implementation.
+- [x] Damage all enemies inside the radius.
+- [x] Add clear visual effect for the explosion radius.
+- [x] Add cooldown and mana consumption.
 
 ## Theme 4 — Enemies `[ ]`
 
