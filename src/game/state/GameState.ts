@@ -55,8 +55,17 @@ export class GameStateManager {
     return (
       this._state === GameState.Paused ||
       this._state === GameState.Victory ||
+      this._state === GameState.Defeat
+    );
+  }
+
+  isInputBlocked(): boolean {
+    return (
+      this._state === GameState.Paused ||
+      this._state === GameState.Victory ||
       this._state === GameState.Defeat ||
-      this._state === GameState.LevelUpSelection
+      this._state === GameState.LevelUpSelection ||
+      this._state === GameState.TeleportTargeting
     );
   }
 

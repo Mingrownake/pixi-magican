@@ -218,34 +218,34 @@ Goal: create a stable PixiJS v8 + TypeScript game foundation that can run, updat
 - [x] Add circle/radius overlap helpers for skills and hazards.
 - [x] Add a simple typed event system or lightweight gameplay event service for events such as level up, enemy killed, player damaged, skill used, and run finished.
 
-## Theme 2 — Player Core `[ ]`
+## Theme 2 — Player Core `[x]`
 
 Goal: create the player mage with movement, stats, health, mana, regeneration, experience, and leveling.
 
-### Block 2.1 — Player entity `[ ]`
+### Block 2.1 — Player entity `[x]`
 
-- [ ] Create the player entity with gameplay state, custom movement controller, collision radius, placeholder visual, and TypeScript controller/system integration.
-- [ ] Add config-driven base stats: max HP, max MP, HP regen, MP regen, movement speed, collision radius.
-- [ ] Add update logic for movement and regeneration.
-- [ ] Add damage handling and death state.
-- [ ] Expose necessary typed events: damaged, died, mana_changed, hp_changed, level_changed.
+- [x] Create the player entity with gameplay state, custom movement controller, collision radius, placeholder visual, and TypeScript controller/system integration.
+- [x] Add config-driven base stats: max HP, max MP, HP regen, MP regen, movement speed, collision radius.
+- [x] Add update logic for movement and regeneration.
+- [x] Add damage handling and death state.
+- [x] Expose necessary typed events: damaged, died, mana_changed, hp_changed, level_changed.
 
-### Block 2.2 — Input system `[ ]`
+### Block 2.2 — Input system `[x]`
 
-- [ ] Implement keyboard movement input using PixiJS Input System actions.
-- [ ] Implement pointer tracking from screen-space mouse position to world-space arena coordinates.
-- [ ] Implement left mouse button input for dash.
-- [ ] Implement `Q` input for teleport.
-- [ ] Implement a dedicated input action for explosion.
-- [ ] Implement input gating so locked skills cannot be used before the required level.
+- [x] Implement keyboard movement input using PixiJS Input System actions.
+- [x] Implement pointer tracking from screen-space mouse position to world-space arena coordinates.
+- [x] Implement left mouse button input for dash.
+- [x] Implement `Q` input for teleport.
+- [x] Implement a dedicated input action for explosion.
+- [x] Implement input gating so locked skills cannot be used before the required level.
 
-### Block 2.3 — Experience and level system `[ ]`
+### Block 2.3 — Experience and level system `[x]`
 
-- [ ] Add player XP and level state.
-- [ ] Add configurable XP requirements per level or a formula.
-- [ ] Add XP essence pickup or direct XP reward placeholder.
-- [ ] Trigger level-up flow when XP reaches the requirement.
-- [ ] Pause or block combat flow while upgrade cards are being selected.
+- [x] Add player XP and level state.
+- [x] Add configurable XP requirements per level or a formula.
+- [x] Add XP essence pickup or direct XP reward placeholder.
+- [x] Trigger level-up flow when XP reaches the requirement.
+- [x] Pause or block combat flow while upgrade cards are being selected.
 
 ## Theme 3 — Player Skills `[ ]`
 
